@@ -156,6 +156,9 @@ const BitcoinPriceChart: React.FC = () => {
         type: 'inside',
         start: 0,
         end: 100,
+        zoomOnMouseWheel: true, // Enable zooming via pinch gesture
+        moveOnMouseMove: true,   // Enable panning
+        preventDefaultMouseMove: true // Prevent default behavior for smooth zooming
       }
     ],
     grid: {
