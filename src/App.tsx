@@ -11,7 +11,9 @@ interface StockDataPoint {
   price: number;
 }
 
-const generateStaticData = (timeframe: string, startPrice: number): StockDataPoint[] => {
+type Timeframe = '1d' | '30' | '365';
+
+const generateStaticData = (timeframe: Timeframe, startPrice: number): StockDataPoint[] => {
   const data: StockDataPoint[] = [];
   let currentPrice = startPrice;
   const now = Date.now();
@@ -35,8 +37,6 @@ const generateStaticData = (timeframe: string, startPrice: number): StockDataPoi
       interval = 24 * 60 * 60 * 1000; // 1 day in milliseconds
       maxChange = 0.03; // 3% max change per day
       break;
-    default:
-      throw new Error('Invalid timeframe');
   }
   
   for (let i = 0; i < points; i++) {
@@ -51,8 +51,7 @@ const generateStaticData = (timeframe: string, startPrice: number): StockDataPoi
   return data;
 };
 
-// Pregenerate data for all timeframes
-const preGeneratedData = {
+const preGeneratedData: Record<Timeframe, StockDataPoint[]> = {
   '1d': generateStaticData('1d', 60000),
   '30': generateStaticData('30', 60000),
   '365': generateStaticData('365', 60000),
@@ -68,7 +67,7 @@ const BitcoinLogo: React.FC = () => (
 );
 
 const BitcoinPriceChart: React.FC = () => {
-  const [timeframe, setTimeframe] = useState<string>('1d');
+  const [timeframe, setTimeframe] = useState<Timeframe>('1d');
   const [priceData, setPriceData] = useState<StockDataPoint[]>(preGeneratedData['1d']);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [priceChange, setPriceChange] = useState<number | null>(null);
@@ -177,7 +176,7 @@ const BitcoinPriceChart: React.FC = () => {
     }
   };
 
-  const handleTimeframeChange = (newTimeframe: string) => {
+  const handleTimeframeChange = (newTimeframe: Timeframe) => {
     setTimeframe(newTimeframe);
   };
 
