@@ -179,8 +179,10 @@ const BitcoinPriceChart: React.FC = () => {
         type: 'line',
         symbol: 'none',
         sampling: 'lttb',
-        itemStyle: {
-          color: 'rgb(255, 70, 131)'
+        lineStyle: {
+          color: "#1890ff",
+          width: 2,
+          join: "round",
         },
         areaStyle: {
           color: "rgba(24, 144, 255, 0.2)",
