@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Typography, Button, Space } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, LineSeriesOption  } from 'echarts';
 
 const BitcoinLogo: React.FC = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" style={{ verticalAlign: 'middle', marginRight: '8px' }}>
@@ -85,14 +85,6 @@ const BitcoinPriceChart: React.FC = () => {
     setPriceChange(((data[data.length - 1].price - data[0].price) / data[0].price) * 100);
   }, [timeframe]);
 
-  const getYAxisRange = (data: StockDataPoint[]) => {
-    const prices = data.map(point => point.price);
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    const padding = (max - min) * 0.1;
-    return [Math.floor(min - padding), Math.ceil(max + padding)];
-  };
-
   const updatePriceDisplay = useCallback((params: any) => {
     if (params && params.value) {
       const price = params.value[1];
@@ -111,6 +103,7 @@ const BitcoinPriceChart: React.FC = () => {
   }, [priceData]);
 
   const options: EChartsOption = {
+    animation: false,
     tooltip: {
       trigger: 'axis',
       formatter: (params: any) => {
@@ -121,48 +114,49 @@ const BitcoinPriceChart: React.FC = () => {
         }
         return 'No data';
       },
-      position: function (pt) {
-        return [pt[0], '10%'];
-      }
+      position: (pt: number[]) => [pt[0], '10%']
     },
     xAxis: {
       type: 'time',
       splitLine: { show: false },
       axisLabel: { show: false },
       axisTick: { show: false },
-      axisLine: { show: false }
+      axisLine: { show: false },
+      min: 'dataMin',
+      max: 'dataMax'
     },
     yAxis: {
       type: 'value',
       splitLine: { show: false },
-      min: getYAxisRange(priceData)[0],
-      max: getYAxisRange(priceData)[1],
       axisLabel: { show: false },
       axisTick: { show: false },
-      axisLine: { show: false }
+      axisLine: { show: false },
+      scale: true
     },
     series: [{
-      data: priceData.map(point => [point.timestamp, point.price]),
       type: 'line',
-      smooth: true,
       showSymbol: false,
+      clip: false,
+      sampling: 'lttb',
       lineStyle: {
-        color: '#1890ff'
+        color: '#1890ff',
+        width: 2,
+        join: 'round'
       },
       areaStyle: {
-        color: 'rgba(24, 144, 255, 0.2)'
-      }
-    }],
+        color: 'rgba(24, 144, 255, 0.2)',
+        origin: 'start'
+      },
+      progressive: 1000,
+      progressiveThreshold: 5000,
+      data: priceData.map(point => [point.timestamp, point.price]),
+    } as LineSeriesOption],
     dataZoom: [
       {
         type: 'inside',
-        xAxisIndex: [0],
-        filterMode: 'filter'
-      },
-      {
-        type: 'inside',
-        yAxisIndex: [0],
-        filterMode: 'empty'
+        start: 0,
+        end: 100,
+        minValueSpan: 3600 * 1000 // Minimum 1 hour range
       }
     ],
     grid: {
@@ -214,7 +208,7 @@ const BitcoinPriceChart: React.FC = () => {
         margin: '0 auto'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <Title level={2} style={{ marginBottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Title level={2} style={{ marginBottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop:'12px' }}>
             <BitcoinLogo />
             BTC
           </Title>
