@@ -77,12 +77,6 @@ or with yarn:
 yarn preview
 ```
 
-## Future Enhancements
-
-- Implement pinch-to-zoom functionality for time ranges
-- Integrate with a real-time Bitcoin price API for live data
-- Add more customization options for chart appearance
-- Implement as a Telegram mini app with haptic feedback
 
 ## Notes
 
