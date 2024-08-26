@@ -120,76 +120,75 @@ const BitcoinPriceChart: React.FC = () => {
     [priceData]
   );
 
+
+  let base = +new Date(1968, 9, 3);
+  let oneDay = 24 * 3600 * 1000;
+  let date = [];
+  let data = [Math.random() * 300];
+  for (let i = 1; i < 20000; i++) {
+    let now = new Date((base += oneDay));
+    date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
+    data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+  }
+
+
+
   const options: EChartsOption = {
-    animation: false,
-    responsive: true,
     tooltip: {
-      trigger: "axis",
-      formatter: (params: any) => {
-        if (Array.isArray(params) && params.length > 0 && params[0].value) {
-          const date = new Date(params[0].value[0]);
-          const price = params[0].value[1];
-          return `${date.toLocaleString()}<br />Price: $${price.toFixed(2)}`;
-        }
-        return "No data";
-      },
-      position: (pt: number[]) => [pt[0], "10%"],
+      trigger: 'axis',
+      position: function (pt) {
+        return [pt[0], '10%'];
+      }
+    },
+    title: {
+      left: 'center',
+      text: 'Large Area Chart'
+    },
+    toolbox: {
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        restore: {},
+        saveAsImage: {}
+      }
     },
     xAxis: {
-      type: "time",
-      splitLine: { show: false },
-      axisLabel: { show: false },
-      axisTick: { show: false },
-      axisLine: { show: false },
-      min: "dataMin",
-      max: "dataMax",
+      type: 'category',
+      boundaryGap: false,
+      data: date
     },
     yAxis: {
-      type: "value",
-      splitLine: { show: false },
-      axisLabel: { show: false },
-      axisTick: { show: false },
-      axisLine: { show: false },
-      scale: true,
+      type: 'value',
+      boundaryGap: [0, '100%']
     },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        start: 0,
+        end: 100
+      }
+    ],
     series: [
       {
-        type: "line",
-        showSymbol: false,
-        clip: false,
-        sampling: "lttb",
-        lineStyle: {
-          color: "#1890ff",
-          width: 2,
-          join: "round",
+        name: 'Fake Data',
+        type: 'line',
+        symbol: 'none',
+        sampling: 'lttb',
+        itemStyle: {
+          color: 'rgb(255, 70, 131)'
         },
         areaStyle: {
           color: "rgba(24, 144, 255, 0.2)",
           origin: "start",
         },
-        progressive: 0,
-        progressiveThreshold: 0,
-        data: priceData.map((point) => [point.timestamp, point.price]),
-      } as LineSeriesOption,
-    ],
-    dataZoom: [
-      {
-        type: "inside",
-        start: 0,
-        end: 100,
-      },
-      {
-        start: 0,
-        end: 100,
-      },
-    ],
-    grid: {
-      left: 0,
-      right: 0,
-      bottom: 0,
-      top: 0,
-      containLabel: false,
-    },
+        data: data
+      }
+    ]
   };
 
   const handleTimeframeChange = (newTimeframe: Timeframe) => {
