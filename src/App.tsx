@@ -35,12 +35,12 @@ const generateStaticData = (timeframe: Timeframe, startPrice: number): StockData
 
   switch (timeframe) {
     case '1d':
-      points = 50;
+      points = 200;
       interval = 60 * 60 * 1000; // 1 hour in milliseconds
       maxChange = 0.005; // 0.5% max change per hour
       break;
     case '30':
-      points = 100;
+      points = 200;
       interval = 24 * 60 * 60 * 1000; // 1 day in milliseconds
       maxChange = 0.02; // 2% max change per day
       break;
