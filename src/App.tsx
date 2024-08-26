@@ -163,6 +163,7 @@ const BitcoinPriceChart: React.FC = () => {
       area: {
         marker: {
           radius: 2,
+          enabled: false,
         },
         lineWidth: 1,
         states: {
@@ -178,6 +179,36 @@ const BitcoinPriceChart: React.FC = () => {
     },
     legend: {
       enabled: false,
+    },
+
+    responsive: {
+      rules: [
+        {
+          condition: {
+            maxWidth: 500,
+          },
+          chartOptions: {
+            chart: {
+              height: 200, // Reduce height for mobile devices
+            },
+            xAxis: {
+              labels: {
+                rotation: -45,
+                style: {
+                  fontSize: "8px",
+                },
+              },
+            },
+            yAxis: {
+              labels: {
+                style: {
+                  fontSize: "8px",
+                },
+              },
+            },
+          },
+        },
+      ],
     },
   };
 
