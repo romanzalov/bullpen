@@ -156,7 +156,6 @@ const BitcoinPriceChart: React.FC = () => {
         type: 'inside',
         start: 0,
         end: 100,
-        minValueSpan: 3600 * 1000 // Minimum 1 hour range
       }
     ],
     grid: {
