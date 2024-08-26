@@ -1,29 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Typography, Button, Space } from "antd";
 import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
-import ReactECharts from "echarts-for-react";
-import type { EChartsOption } from "echarts";
-
-const BitcoinLogo: React.FC = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
-    style={{ verticalAlign: "middle", marginRight: "8px" }}
-  >
-    <g fill="none" fillRule="evenodd">
-      <circle cx="16" cy="16" r="16" fill="#F7931A" />
-      <path
-        fill="#FFF"
-        fillRule="nonzero"
-        d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z"
-      />
-    </g>
-  </svg>
-);
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 const { Title, Text } = Typography;
+
+import BitcoinLogo from "./BitcoinLogo";
 
 interface StockDataPoint {
   timestamp: number;
@@ -86,7 +69,7 @@ const BitcoinPriceChart: React.FC = () => {
   );
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [priceChange, setPriceChange] = useState<number | null>(null);
-  const chartRef = useRef<ReactECharts>(null);
+  const chartRef = useRef<HighchartsReact.RefObject>(null);
 
   useEffect(() => {
     const data = preGeneratedData[timeframe];
@@ -98,9 +81,8 @@ const BitcoinPriceChart: React.FC = () => {
   }, [timeframe]);
 
   const updatePriceDisplay = useCallback(
-    (params: any) => {
-      if (params && params.value) {
-        const price = params.value[1];
+    (price: number | null) => {
+      if (price !== null) {
         setDisplayPrice(price);
         const initialPrice = priceData[0]?.price;
         if (initialPrice) {
@@ -120,77 +102,83 @@ const BitcoinPriceChart: React.FC = () => {
     [priceData]
   );
 
-
-  let base = +new Date(1968, 9, 3);
-  const oneDay = 24 * 3600 * 1000;
-  const date = [];
-  const data = [Math.random() * 300];
-  for (let i = 1; i < 20000; i++) {
-    const now = new Date((base += oneDay));
-    date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-    data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
-  }
-
-
-
-  const options: EChartsOption = {
-    tooltip: {
-      trigger: 'axis',
-      position: function (pt) {
-        return [pt[0], '10%'];
-      }
-    },
+  const options: Highcharts.Options = {
     title: {
-      left: 'center',
-      text: 'Large Area Chart'
-    },
-    toolbox: {
-      feature: {
-        dataZoom: {
-          yAxisIndex: 'none'
-        },
-        restore: {},
-        saveAsImage: {}
-      }
+      text: undefined,
     },
     xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: date
+      type: "datetime",
+      labels: {
+        enabled: false,
+      },
+      title: {
+        text: null,
+      },
+      lineWidth: 0,
+      tickWidth: 0,
     },
     yAxis: {
-      type: 'value',
-      boundaryGap: [0, '100%']
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        start: 0,
-        end: 100
+      title: {
+        text: null,
       },
-      {
-        start: 0,
-        end: 100
-      }
-    ],
+      labels: {
+        enabled: false,
+      },
+      gridLineWidth: 0,
+    },
+    tooltip: {
+      valueDecimals: 2,
+      valuePrefix: "$",
+    },
     series: [
       {
-        name: 'Fake Data',
-        type: 'line',
-        symbol: 'none',
-        sampling: 'lttb',
-        lineStyle: {
-          color: "#1890ff",
-          width: 2,
-          join: "round",
+        type: "area",
+        name: "Bitcoin Price",
+        data: priceData.map((point) => [point.timestamp, point.price]),
+        color: {
+          linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+          stops: [
+            [0, "rgb(199, 113, 243)"],
+            [0.7, "rgb(76, 175, 254)"],
+          ],
         },
-        areaStyle: {
-          color: "rgba(24, 144, 255, 0.2)",
-          origin: "start",
+        fillOpacity: 0.2,
+      },
+    ],
+    chart: {
+      zooming: {
+        type: "x",
+      },
+      events: {
+        load: function (this: Highcharts.Chart) {
+          const lastPoint =
+            this.series[0].points[this.series[0].points.length - 1];
+          if (lastPoint) {
+            lastPoint.onMouseOver();
+          }
         },
-        data: data
-      }
-    ]
+      },
+    },
+    plotOptions: {
+      area: {
+        marker: {
+          radius: 2,
+        },
+        lineWidth: 1,
+        states: {
+          hover: {
+            lineWidth: 1,
+          },
+        },
+        threshold: null,
+      },
+    },
+    credits: {
+      enabled: false,
+    },
+    legend: {
+      enabled: false,
+    },
   };
 
   const handleTimeframeChange = (newTimeframe: Timeframe) => {
@@ -198,31 +186,41 @@ const BitcoinPriceChart: React.FC = () => {
   };
 
   useEffect(() => {
-    const chart = chartRef.current?.getEchartsInstance();
+    const chart = chartRef.current?.chart;
     if (chart) {
-      chart.on("updateAxisPointer", (params: any) => {
-        if (params.axesInfo && params.axesInfo.length > 0) {
-          const axisValue = params.axesInfo[0].value;
-          const pointIndex = priceData.findIndex(
-            (point) => point.timestamp === axisValue
-          );
-          if (pointIndex !== -1) {
-            updatePriceDisplay({
-              value: [axisValue, priceData[pointIndex].price],
-            });
-          }
-        } else {
-          updatePriceDisplay(null);
+      const updateTooltip = (e: MouseEvent) => {
+        const event = chart.pointer.normalize(e);
+        const point = chart.series[0].searchPoint(event, true);
+        if (point) {
+          updatePriceDisplay(point.y || null);
         }
-      });
-    }
+      };
 
-    return () => {
-      if (chart) {
-        chart.off("updateAxisPointer");
-      }
-    };
-  }, [updatePriceDisplay, priceData]);
+      const addListeners = () => {
+        chart.container.addEventListener("mousemove", updateTooltip);
+        chart.container.addEventListener(
+          "touchmove",
+          updateTooltip as EventListener
+        );
+      };
+
+      const removeListeners = () => {
+        chart.container.removeEventListener("mousemove", updateTooltip);
+        chart.container.removeEventListener(
+          "touchmove",
+          updateTooltip as EventListener
+        );
+      };
+
+      addListeners();
+
+      return () => {
+        if (chart && chart.container) {
+          removeListeners();
+        }
+      };
+    }
+  }, [updatePriceDisplay]);
 
   return (
     <div
@@ -278,12 +276,11 @@ const BitcoinPriceChart: React.FC = () => {
             </Text>
           )}
         </div>
-        <div style={{ width: "100vw", overflow: "hidden" }}>
-          <ReactECharts
+        <div>
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={options}
             ref={chartRef}
-            option={options}
-            style={{ height: "300px", width: "100%" }}
-            opts={{ renderer: "svg" }}
           />
         </div>
         <Space
