@@ -118,7 +118,7 @@ const BitcoinPriceChart: React.FC = () => {
     },
     xAxis: {
       type: 'time',
-      boundaryGap: false,
+      splitLine: { show: false },
       axisLabel: { show: false },
       axisTick: { show: false },
       axisLine: { show: false },
@@ -127,7 +127,6 @@ const BitcoinPriceChart: React.FC = () => {
     },
     yAxis: {
       type: 'value',
-      boundaryGap: [0, '100%'],
       splitLine: { show: false },
       axisLabel: { show: false },
       axisTick: { show: false },
@@ -135,25 +134,21 @@ const BitcoinPriceChart: React.FC = () => {
       scale: true
     },
     series: [{
-      name: 'BTC Price',
       type: 'line',
       showSymbol: false,
+      clip: false,
       sampling: 'lttb',
-      itemStyle: {
-        color: 'rgb(255, 70, 131)'
+      lineStyle: {
+        color: '#1890ff',
+        width: 2,
+        join: 'round'
       },
       areaStyle: {
-        color: new (ReactECharts as any).graphic.LinearGradient(0, 0, 0, 1, [
-          {
-            offset: 0,
-            color: 'rgb(255, 158, 68)'
-          },
-          {
-            offset: 1,
-            color: 'rgb(255, 70, 131)'
-          }
-        ])
+        color: 'rgba(24, 144, 255, 0.2)',
+        origin: 'start'
       },
+      progressive: 1000,
+      progressiveThreshold: 5000,
       data: priceData.map(point => [point.timestamp, point.price]),
     } as LineSeriesOption],
     dataZoom: [
@@ -161,10 +156,9 @@ const BitcoinPriceChart: React.FC = () => {
         type: 'inside',
         start: 0,
         end: 100,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
-        preventDefaultMouseMove: false
-      }
+        // Disable zoom and pan on mobile devices
+        disabled: window.innerWidth < 768
+      },
     ],
     grid: {
       left: 0,
@@ -193,25 +187,11 @@ const BitcoinPriceChart: React.FC = () => {
           updatePriceDisplay(null);
         }
       });
-
-      chart.on('touchstart', (params: any) => {
-        chart.setOption({
-          dataZoom: [{
-            type: 'inside',
-            start: 0,
-            end: 100,
-            zoomOnMouseWheel: true,
-            moveOnMouseMove: true,
-            preventDefaultMouseMove: false
-          }]
-        });
-      });
     }
 
     return () => {
       if (chart) {
         chart.off('updateAxisPointer');
-        chart.off('touchstart');
       }
     };
   }, [updatePriceDisplay, priceData]);
