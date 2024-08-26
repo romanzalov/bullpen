@@ -204,35 +204,49 @@ const BitcoinPriceChart: React.FC = () => {
   }, [updatePriceDisplay, priceData]);
 
   return (
-    <div style={{ padding: '10px', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <Title level={2} style={{ marginBottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <BitcoinLogo />
-          BTC
-        </Title>
-        {displayPrice !== null && (
-          <Text strong style={{ fontSize: '1.2rem' }}>
-            ${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            {priceChange !== null && (
-              <span style={{ marginLeft: '10px', color: priceChange >= 0 ? 'green' : 'red' }}>
-                {priceChange >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                {Math.abs(priceChange).toFixed(2)}%
-              </span>
-            )}
-          </Text>
-        )}
+    <div style={{ 
+      width: '100%', 
+      maxWidth: '100vw', 
+      overflow: 'hidden', 
+      padding: '10px',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{ 
+        width: '100%', 
+        maxWidth: '600px', 
+        margin: '0 auto'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <Title level={2} style={{ marginBottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BitcoinLogo />
+            BTC
+          </Title>
+          {displayPrice !== null && (
+            <Text strong style={{ fontSize: '1.2rem' }}>
+              ${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+              {priceChange !== null && (
+                <span style={{ marginLeft: '10px', color: priceChange >= 0 ? 'green' : 'red' }}>
+                  {priceChange >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                  {Math.abs(priceChange).toFixed(2)}%
+                </span>
+              )}
+            </Text>
+          )}
+        </div>
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ReactECharts
+            ref={chartRef}
+            option={options}
+            style={{ height: '300px', width: '100%' }}
+            opts={{ renderer: 'svg' }}
+          />
+        </div>
+        <Space style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Button size="small" type={timeframe === '1d' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('1d')}>1 Day</Button>
+          <Button size="small" type={timeframe === '30' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('30')}>1 Month</Button>
+          <Button size="small" type={timeframe === '365' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('365')}>1 Year</Button>
+        </Space>
       </div>
-      <ReactECharts
-        ref={chartRef}
-        option={options}
-        style={{ height: '300px', width: '100%' }}
-        opts={{ renderer: 'svg' }}
-      />
-      <Space style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <Button size="small" type={timeframe === '1d' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('1d')}>1 Day</Button>
-        <Button size="small" type={timeframe === '30' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('30')}>1 Month</Button>
-        <Button size="small" type={timeframe === '365' ? 'primary' : 'default'} onClick={() => handleTimeframeChange('365')}>1 Year</Button>
-      </Space>
     </div>
   );
 };
