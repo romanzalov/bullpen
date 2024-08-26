@@ -35,12 +35,12 @@ const generateStaticData = (timeframe: Timeframe, startPrice: number): StockData
 
   switch (timeframe) {
     case '1d':
-      points = 200;
+      points = 50;
       interval = 60 * 60 * 1000; // 1 hour in milliseconds
       maxChange = 0.005; // 0.5% max change per hour
       break;
     case '30':
-      points = 200;
+      points = 100;
       interval = 24 * 60 * 60 * 1000; // 1 day in milliseconds
       maxChange = 0.02; // 2% max change per day
       break;
@@ -155,10 +155,8 @@ const BitcoinPriceChart: React.FC = () => {
       {
         type: 'inside',
         start: 0,
-        end: 100,
-        // Disable zoom and pan on mobile devices
-        disabled: window.innerWidth < 768
-      },
+        end: 10
+      }
     ],
     grid: {
       left: 0,
